@@ -39,13 +39,13 @@ The regex used to parse Dice Expressions, accepts values that meet these require
 
 * (optional) Number of Dice to roll.  If absent, one die is assumed.
 * Dice Type:
-** "d" or "D": Normal dice.
-** "e" or "E": Exploding Dice.  If the roll of one die is "1", roll another die and subtract that from 1. If the roll equals the number of sides (maximum result), roll another die and add that to the 1.  In either case, if the "exploded" die is the maximum result, continue rolling another exploded die.  An exploding d6 will never roll a 1 or a 6.
-*** "eu" or "EU": Exploding Dice, Up: As Exploding Dice, but dice only "explode" on a maximum roll.
-*** "ed" or "ED": Exploding Dice, Down: As Exploding Dice, but dice only "explode" on a 1.
-** "s" or "S": Smoothly Exploding Dice: similar to Exploding Dice, but the die rolled has two more sides than the number of sides specified in the dice expression.  One result indicates subtracting a die roll from 1 and the other indicates adding a die roll to the maximum result (number of sides).  A smoothly exploding d6 may roll a 1 or a 6.
-*** "su" or "SU": Smoothly Exploding Dice, Up: As Smoothly Exploding Dice, but the die only has one extra side and only explodes up on that result.
-*** "sd" or "SD": Smoothly Exploding Dice, Down: As Smoothly Exploding Dice, but the die only has one extra side and only explodes down on that result.
+  * "d" or "D": Normal dice.
+  * "e" or "E": Exploding Dice.  If the roll of one die is "1", roll another die and subtract that from 1. If the roll equals the number of sides (maximum result), roll another die and add that to the 1.  In either case, if the "exploded" die is the maximum result, continue rolling another exploded die.  An exploding d6 will never roll a 1 or a 6.
+    * "eu" or "EU": Exploding Dice, Up: As Exploding Dice, but dice only "explode" on a maximum roll.
+    * "ed" or "ED": Exploding Dice, Down: As Exploding Dice, but dice only "explode" on a 1.
+  * "s" or "S": Smoothly Exploding Dice: similar to Exploding Dice, but the die rolled has two more sides than the number of sides specified in the dice expression.  One result indicates subtracting a die roll from 1 and the other indicates adding a die roll to the maximum result (number of sides).  A smoothly exploding d6 may roll a 1 or a 6.
+    * "su" or "SU": Smoothly Exploding Dice, Up: As Smoothly Exploding Dice, but the die only has one extra side and only explodes up on that result.
+    * "sd" or "SD": Smoothly Exploding Dice, Down: As Smoothly Exploding Dice, but the die only has one extra side and only explodes down on that result.
 * Number of sides
 * (optional) "t" or "T" and digits: Threshold: roll the specified number of dice, but instead of summing them up, add one for every die with a result equal to or greater than the specified number (next).
 * (optional) "b" or "B" and digits: Bursting Threshold Dice: As with Threshold Dice, except roll another die whenever a die has a maximum result.
