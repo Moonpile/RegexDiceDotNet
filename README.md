@@ -35,6 +35,27 @@ int roll4 = Dice.Roll(3,6,5); // three six-sided dice plus five.
 
 ## Dice Syntax
 
+### Dice Expression Examples
+
+* 3d6 - sum three six-sided dice.
+* 3e6 - sum three exploding six-sided dice.
+* 3eu6 - sum three upward exploding six-sided dice.
+* 3ed6 - sum three downward exploding six-sided dice.
+* 3s6 - sum three smoothly exploding six-sided dice.
+* 3su6 - sum three upward smoothly exploding six-sided dice.
+* 3sd6 - sum three downward smoothly exploding six-sided dice.
+* d100 - roll one one hundred-sided die.
+* d1000 - roll one one thousand-sided die.
+* 1d20 - roll one twenty-sided die.
+* 1d20+10 - roll one twenty-sided die and add ten.
+* 1d20-10 - roll one twenty-sided die and subtract ten.
+* 10d10t7 - roll ten ten-sided dice, and count those that result in seven or more.
+* 10e3f0 - sum ten exploding ten sided dice and change any result below zero to zero.
+* 10e3c50 - sum ten exploding ten sided dice and change any result above fifty to fifty.
+
+
+### Details
+
 The regex used to parse Dice Expressions, accepts values that meet these requirements:
 
 * (optional) Number of Dice to roll.  If absent, one die is assumed.
