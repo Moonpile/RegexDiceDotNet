@@ -37,9 +37,9 @@ int roll4 = Dice.Roll(3,6,5); // three six-sided dice plus five.
 
 The regex used to parse Dice Expressions, accepts values that meet these requirements:
 
-
 * (optional) Number of Dice to roll.  If absent, one die is assumed.
 * Dice Type:
+
   * "d" or "D": Normal dice.
   * "e" or "E": Exploding Dice.  If the roll of one die is "1", roll another die and subtract that from 1. If the roll equals the number of sides (maximum result), roll another die and add that to the 1.  In either case, if the "exploded" die is the maximum result, continue rolling another exploded die.  An exploding d6 will never roll a 1 or a 6.
     * "eu" or "EU": Exploding Dice, Up: As Exploding Dice, but dice only "explode" on a maximum roll.
