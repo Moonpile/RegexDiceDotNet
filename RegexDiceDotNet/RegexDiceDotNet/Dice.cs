@@ -29,7 +29,7 @@ namespace RegexDiceDotNet
             }
         }
 
-        public static int Roll(int NumDice, int NumSides, int Modifier)
+        public static int Roll(int NumDice, int NumSides, int Modifier = 0)
         {
             int result = 0;
             for (int i = 1; (i <= NumDice); i++)
