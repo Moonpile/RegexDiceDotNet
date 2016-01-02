@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RegexDiceDotNet
@@ -10,7 +9,7 @@ namespace RegexDiceDotNet
     public static class Dice
     {
         public static Random Random = new Random();
-        public static Regex diceregex = new Regex(@"^(?<numdice>\d*)(?<dsides>(?<type>[dDeEsS]|eu|EU|ed|ED|su|SU|sd|SD)(?<numsides>\d+))(?<threshold>(?<thresholdtype>[b|B|t|T])(?<thresholdlimit>(?<thresholdsign>[\+\-])?(?<thresholdvalue>\d*)))?(?<modifier>(?<sign>[\+\-])(?<addend>\d*))?(?<floor>(?<floorseperator>[f|F])(?<floorlimit>(?<floorsign>[\+\-])?(?<floorlimiter>\d*)))?(?<ceiling>(?<ceilingseperator>[c|C])(?<ceilinglimit>(?<ceilingsign>[\+\-])?(?<ceilinglimiter>\d*)))?$");
+
 
         /// <summary>
         /// This is the base method that all other dice methods should use.  It rolls one die of NumSides.
@@ -57,70 +56,79 @@ namespace RegexDiceDotNet
         {
             ExpandedDiceRoll result = new ExpandedDiceRoll();
 
+            int literalInteger;
             //Allow a literal number to override a dice roll.
-            if (Int32.TryParse(DiceExpression, out result.Result))
+            if (Int32.TryParse(DiceExpression, out literalInteger))
             {
+                result.Result = literalInteger;
+                result.FullResults = "Literal Integer: " + literalInteger;
+                return result;
+            }
+            
+            DiceParameters diceParams = new DiceParameters(DiceExpression);
+
+            if (!diceParams.IsValid)
+            {
+                result.IsValid = false;
+                result.DiceParameters = diceParams;
                 return result;
             }
 
-            Match match = diceregex.Match(DiceExpression);
-            if (!match.Success)
-            {
-                result.Result = 0;
-                result.FullResults = "\"" + DiceExpression + "\" is not a valid dice expression";
-                return result;
-            }
-
-            int numDice = 1;
-            int numSides = 0;
-            int modifier = 0;
-            string diceType = match.Groups["type"].Value.ToLower();
-            int? threshold = ParseNullableInteger(match.Groups["thresholdvalue"].Value);
-            string thresholdType = "";
-            if (threshold.HasValue)
-            {
-                thresholdType = match.Groups["thresholdtype"].Value.ToLower();
-            }
 
 
-            int? lowerlimit = ParseNullableInteger(match.Groups["floorlimit"].Value);
-            int? upperlimit = ParseNullableInteger(match.Groups["ceilinglimit"].Value);
-
-
-
-            if (!string.IsNullOrWhiteSpace(match.Groups["numdice"].Value))
-            {
-                numDice = Int32.Parse(match.Groups["numdice"].Value);
-            }
-            if (!string.IsNullOrWhiteSpace(match.Groups["numsides"].Value))
-            {
-                numSides = Int32.Parse(match.Groups["numsides"].Value);
-            }
-            if (!string.IsNullOrWhiteSpace(match.Groups["modifier"].Value))
-            {
-                modifier = Int32.Parse(match.Groups["modifier"].Value);
-            }
 
 
             //Normal dice
             if (diceType == "d"
                 && !threshold.HasValue)
             {
-                for (int i = 1; (i <= numDice); i++)
-                {
-                    int roll = Dice.Roll(numSides);
-                    result.FullResults += roll;
-                    result.Result += roll;
+                List<int> rolls = new List<int>();
 
-                    if ((i < numDice))
-                    {
-                        result.FullResults += " + ";
-                    }
-                    //else
-                    //{
-                    //    result.FullResults += " = ";
-                    //}
+                for (int i = 1; i <= numDice; i++)
+                {
+                    rolls.Add(Dice.Roll(numSides));
                 }
+                
+                if (keepnumber.HasValue)
+                {
+                    if (keepType == "k")
+                    {
+                        //Keep the highest
+                        rolls = rolls.OrderByDescending(p => p).ToList();
+                    }
+                    else if (keepType == "l")
+                    {
+                        //keep the lowest
+                        rolls = rolls.OrderBy(p => p).ToList();
+                    }
+                }
+                StringBuilder sb = new StringBuilder();
+                int total = 0;
+                for (int i = 0; i < rolls.Count(); i++)
+                {
+                    if (keepnumber.HasValue && i < keepnumber.Value)
+                    {
+                        sb.Append(rolls[i] + "*");
+                        total += rolls[i];
+                    }
+                    else if (keepnumber.HasValue)
+                    {
+                        //Don't add
+                        sb.Append(rolls[i]);
+                    }
+                    else
+                    {
+                        //normal roll, always add
+                        sb.Append(rolls[i]);
+                        total += rolls[i];
+                    }
+                    if (i < rolls.Count - 1)
+                    {
+                        sb.Append(" + ");
+                    }
+                }
+                result.FullResults = sb.ToString();
+                result.Result = total;
             }
 
             //Non-smooth exploding dice
@@ -430,9 +438,23 @@ namespace RegexDiceDotNet
     }
 
 
-    public struct ExpandedDiceRoll
+    public class ExpandedDiceRoll
     {
-        public string FullResults;
-        public int Result;
+        public string FullResults {get; set;}
+        public int Result {get; set;}
+        public List<Roll> Rolls {get; set;}
+
+        public DiceParameters DiceParameters { get; set; }
+
+        public Boolean IsValid { get; set; }
     }
+
+    public class Roll
+    {
+        public int Result {get; set;}
+        public string Accounting {get; set;}
+        public Boolean IncludeInResult {get; set;}
+    }
+
+    
 }
