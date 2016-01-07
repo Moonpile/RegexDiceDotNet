@@ -11,7 +11,7 @@ namespace RegexDiceDotNet
     public class DiceParameters
     {
 
-        public static const string DicePattern = @"^(?<numdice>\d*)(?<dsides>(?<type>[dDeEsS]|eu|EU|ed|ED|su|SU|sd|SD)(?<numsides>\d+))((?<keepseperator>[kKlL])(?<keepnumber>\d*))?(?<threshold>(?<thresholdtype>[b|B|t|T])(?<thresholdlimit>(?<thresholdsign>[\+\-])?(?<thresholdvalue>\d*)))?(?<modifier>(?<sign>[\+\-])(?<addend>\d*))?(?<floor>(?<floorseperator>[f|F])(?<floorlimit>(?<floorsign>[\+\-])?(?<floorlimiter>\d*)))?(?<ceiling>(?<ceilingseperator>[c|C])(?<ceilinglimit>(?<ceilingsign>[\+\-])?(?<ceilinglimiter>\d*)))?$";
+        public const string DicePattern = @"^(?<numdice>\d*)(?<dsides>(?<type>[dDeEsS]|eu|EU|ed|ED|su|SU|sd|SD)(?<numsides>\d+))((?<keepseperator>[kKlL])(?<keepnumber>\d*))?(?<threshold>(?<thresholdtype>[b|B|t|T])(?<thresholdlimit>(?<thresholdsign>[\+\-])?(?<thresholdvalue>\d*)))?(?<modifier>(?<sign>[\+\-])(?<addend>\d*))?(?<floor>(?<floorseperator>[f|F])(?<floorlimit>(?<floorsign>[\+\-])?(?<floorlimiter>\d*)))?(?<ceiling>(?<ceilingseperator>[c|C])(?<ceilinglimit>(?<ceilingsign>[\+\-])?(?<ceilinglimiter>\d*)))?$";
         public static Regex diceregex = new Regex(DicePattern);
 
         //@"^(?<numdice>\d*)(?<dsides>(?<type>[dDeEsS]|eu|EU|ed|ED|su|SU|sd|SD)(?<numsides>\d+))
@@ -80,8 +80,19 @@ namespace RegexDiceDotNet
 
         public string ErrorMessage { get; set; }
 
+        public Boolean IsSmooth
+        {
+            get
+            {
+                return (this.DiceType == DiceType.SmoothlyExploding
+                    || this.DiceType == DiceType.SmoothlyExplodingDownward
+                    || this.DiceType == DiceType.SmoothlyExplodingUpward);
+            }
+        }
 
         private string _diceExpression;
+
+
 
         public string DiceExpression
         {
@@ -155,9 +166,26 @@ namespace RegexDiceDotNet
                         }
                     }
 
+                    this.ThresholdValue = ParseNullableInteger(match.Groups["thresholdlimit"].Value);
+                    if (this.ThresholdValue.HasValue)
+                    {
+                        string thresholdType = match.Groups["thresholdtype"].Value.ToLower();
+                        switch (thresholdType)
+                        {
+                            case "b":
+                                this.ThresholdType = RegexDiceDotNet.ThresholdType.Bursting;
+                                break;
+                            case "t":
+                                this.ThresholdType = RegexDiceDotNet.ThresholdType.Simple;
+                                break;
+                        }
+
+                    }
+
+
                     this.Floor = ParseNullableInteger(match.Groups["floorlimit"].Value);
                     this.Ceiling = ParseNullableInteger(match.Groups["ceilinglimit"].Value);
-
+                    this.IsValid = true;
                 }
             }
         }

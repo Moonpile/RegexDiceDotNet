@@ -39,7 +39,7 @@ namespace RegexDiceDotNet
         }
 
         public static int Roll(string DiceExpression)
-        { return RollExpanded(DiceExpression).Result; }
+        { return RollExpanded(DiceExpression).FullResult; }
 
         private static int? ParseNullableInteger(string StringValue)
         {
@@ -60,11 +60,14 @@ namespace RegexDiceDotNet
             //Allow a literal number to override a dice roll.
             if (Int32.TryParse(DiceExpression, out literalInteger))
             {
-                result.Result = literalInteger;
-                result.FullResults = "Literal Integer: " + literalInteger;
+                Roll literalRoll = new Roll();
+                literalRoll.RollValue = literalInteger;
+                literalRoll.Result = literalInteger;
+                
+                //result.Accounting = "Literal Integer: " + literalInteger;
                 return result;
             }
-            
+
             DiceParameters diceParams = new DiceParameters(DiceExpression);
 
             if (!diceParams.IsValid)
@@ -74,309 +77,305 @@ namespace RegexDiceDotNet
                 return result;
             }
 
+            result.DiceParameters = diceParams;
+
+            result.Roll();
+
+            ////Normal dice
+            //if (diceType == "d"
+            //    && !threshold.HasValue)
+            //{
+            //    List<int> rolls = new List<int>();
 
 
 
+            //    if (keepnumber.HasValue)
+            //    {
+            //        if (keepType == "k")
+            //        {
+            //            //Keep the highest
+            //            rolls = rolls.OrderByDescending(p => p).ToList();
+            //        }
+            //        else if (keepType == "l")
+            //        {
+            //            //keep the lowest
+            //            rolls = rolls.OrderBy(p => p).ToList();
+            //        }
+            //    }
+            //    StringBuilder sb = new StringBuilder();
+            //    int total = 0;
+            //    for (int i = 0; i < rolls.Count(); i++)
+            //    {
+            //        if (keepnumber.HasValue && i < keepnumber.Value)
+            //        {
+            //            sb.Append(rolls[i] + "*");
+            //            total += rolls[i];
+            //        }
+            //        else if (keepnumber.HasValue)
+            //        {
+            //            //Don't add
+            //            sb.Append(rolls[i]);
+            //        }
+            //        else
+            //        {
+            //            //normal roll, always add
+            //            sb.Append(rolls[i]);
+            //            total += rolls[i];
+            //        }
+            //        if (i < rolls.Count - 1)
+            //        {
+            //            sb.Append(" + ");
+            //        }
+            //    }
+            //    result.Accounting = sb.ToString();
+            //    result.Result = total;
+            //}
 
-            //Normal dice
-            if (diceType == "d"
-                && !threshold.HasValue)
-            {
-                List<int> rolls = new List<int>();
+            ////Non-smooth exploding dice
+            //if ((diceType == "e"
+            //    || diceType == "eu"
+            //    || diceType == "ed")
+            //    && !threshold.HasValue)
+            //{
+            //    for (int i = 1; (i <= numDice); i++)
+            //    {
+            //        int roll = Dice.Roll(numSides);
+            //        string explodedResultText = "";
 
-                for (int i = 1; i <= numDice; i++)
-                {
-                    rolls.Add(Dice.Roll(numSides));
-                }
-                
-                if (keepnumber.HasValue)
-                {
-                    if (keepType == "k")
-                    {
-                        //Keep the highest
-                        rolls = rolls.OrderByDescending(p => p).ToList();
-                    }
-                    else if (keepType == "l")
-                    {
-                        //keep the lowest
-                        rolls = rolls.OrderBy(p => p).ToList();
-                    }
-                }
-                StringBuilder sb = new StringBuilder();
-                int total = 0;
-                for (int i = 0; i < rolls.Count(); i++)
-                {
-                    if (keepnumber.HasValue && i < keepnumber.Value)
-                    {
-                        sb.Append(rolls[i] + "*");
-                        total += rolls[i];
-                    }
-                    else if (keepnumber.HasValue)
-                    {
-                        //Don't add
-                        sb.Append(rolls[i]);
-                    }
-                    else
-                    {
-                        //normal roll, always add
-                        sb.Append(rolls[i]);
-                        total += rolls[i];
-                    }
-                    if (i < rolls.Count - 1)
-                    {
-                        sb.Append(" + ");
-                    }
-                }
-                result.FullResults = sb.ToString();
-                result.Result = total;
-            }
+            //        if (roll == numSides && (diceType == "e" || diceType == "eu"))
+            //        {
+            //            //Non-smooth explode up
+            //            explodedResultText += "(UP: " + roll + "+";
+            //            int explodedRoll = 0;
 
-            //Non-smooth exploding dice
-            if ((diceType == "e"
-                || diceType == "eu"
-                || diceType == "ed")
-                && !threshold.HasValue)
-            {
-                for (int i = 1; (i <= numDice); i++)
-                {
-                    int roll = Dice.Roll(numSides);
-                    string explodedResultText = "";
+            //            while (explodedRoll == 0 || explodedRoll == numSides)
+            //            {
+            //                explodedRoll = Dice.Roll(numSides);
+            //                if (explodedRoll == numSides)
+            //                {
+            //                    explodedResultText += explodedRoll + "+";
+            //                    roll += explodedRoll;
+            //                }
+            //                else
+            //                {
+            //                    explodedResultText += explodedRoll + ")";
+            //                    roll += explodedRoll;
+            //                }
+            //            }
+            //        }
+            //        else if (roll == 1 && (diceType == "e" || diceType == "ed"))
+            //        {
+            //            //Non-smooth explode down
+            //            explodedResultText += "(DN: " + roll + "-";
+            //            int explodedRoll = 0;
 
-                    if (roll == numSides && (diceType == "e" || diceType == "eu"))
-                    {
-                        //Non-smooth explode up
-                        explodedResultText += "(UP: " + roll + "+";
-                        int explodedRoll = 0;
+            //            while (explodedRoll == 0 || explodedRoll == numSides)
+            //            {
+            //                explodedRoll = Dice.Roll(numSides);
+            //                if (explodedRoll == numSides)
+            //                {
+            //                    explodedResultText += explodedRoll + "-";
+            //                    roll -= explodedRoll;
+            //                }
+            //                else
+            //                {
+            //                    explodedResultText += explodedRoll + ")";
+            //                    roll -= explodedRoll;
+            //                }
+            //            }
+            //        }
+            //        explodedResultText = roll + " " + explodedResultText;
 
-                        while (explodedRoll == 0 || explodedRoll == numSides)
-                        {
-                            explodedRoll = Dice.Roll(numSides);
-                            if (explodedRoll == numSides)
-                            {
-                                explodedResultText += explodedRoll + "+";
-                                roll += explodedRoll;
-                            }
-                            else
-                            {
-                                explodedResultText += explodedRoll + ")";
-                                roll += explodedRoll;
-                            }
-                        }
-                    }
-                    else if (roll == 1 && (diceType == "e" || diceType == "ed"))
-                    {
-                        //Non-smooth explode down
-                        explodedResultText += "(DN: " + roll + "-";
-                        int explodedRoll = 0;
+            //        result.Result += roll;
 
-                        while (explodedRoll == 0 || explodedRoll == numSides)
-                        {
-                            explodedRoll = Dice.Roll(numSides);
-                            if (explodedRoll == numSides)
-                            {
-                                explodedResultText += explodedRoll + "-";
-                                roll -= explodedRoll;
-                            }
-                            else
-                            {
-                                explodedResultText += explodedRoll + ")";
-                                roll -= explodedRoll;
-                            }
-                        }
-                    }
-                    explodedResultText = roll + " " + explodedResultText;
-
-                    result.Result += roll;
-
-                    if (!string.IsNullOrWhiteSpace(explodedResultText))
-                    {
-                        result.FullResults += explodedResultText;
-                    }
-                    if ((i < numDice))
-                    {
-                        result.FullResults += " + ";
-                    }
-                    //else
-                    //{
-                    //    result.FullResults += " = ";
-                    //}
-                }
-            }
+            //        if (!string.IsNullOrWhiteSpace(explodedResultText))
+            //        {
+            //            result.Accounting += explodedResultText;
+            //        }
+            //        if ((i < numDice))
+            //        {
+            //            result.Accounting += " + ";
+            //        }
+            //        //else
+            //        //{
+            //        //    result.FullResults += " = ";
+            //        //}
+            //    }
+            //}
 
 
-            //Smooth exploding dice
-            if ((diceType == "s"
-                || diceType == "su"
-                || diceType == "sd")
-                && !threshold.HasValue)
-            {
-                for (int i = 1; (i <= numDice); i++)
-                {
-                    int smoothSides = 1;
-                    if (diceType == "s") { smoothSides = 2; }
+            ////Smooth exploding dice
+            //if ((diceType == "s"
+            //    || diceType == "su"
+            //    || diceType == "sd")
+            //    && !threshold.HasValue)
+            //{
+            //    for (int i = 1; (i <= numDice); i++)
+            //    {
+            //        int smoothSides = 1;
+            //        if (diceType == "s") { smoothSides = 2; }
 
-                    int roll = Dice.Roll(numSides + smoothSides);
+            //        int roll = Dice.Roll(numSides + smoothSides);
 
-                    string explodedResultText = "";
+            //        string explodedResultText = "";
 
-                    if (roll == numSides + smoothSides && (diceType == "s" || diceType == "su"))
-                    {
-                        //Smooth explode up
-                        roll -= smoothSides;
+            //        if (roll == numSides + smoothSides && (diceType == "s" || diceType == "su"))
+            //        {
+            //            //Smooth explode up
+            //            roll -= smoothSides;
 
-                        explodedResultText += "(UP: " + roll + "+";
-                        int explodedRoll = 0;
+            //            explodedResultText += "(UP: " + roll + "+";
+            //            int explodedRoll = 0;
 
-                        while (explodedRoll == 0 || explodedRoll == numSides + 1)
-                        {
-                            explodedRoll = Dice.Roll(numSides + 1);
-                            if (explodedRoll == numSides + 1)
-                            {
-                                explodedResultText += numSides + "+";
-                                roll += numSides;
-                            }
-                            else
-                            {
-                                explodedResultText += explodedRoll + ")";
-                                roll += explodedRoll;
-                            }
-                        }
-                    }
-                    else if (roll == numSides + 1 && (diceType == "s" || diceType == "sd"))
-                    {
-                        //Smooth explode down
-                        roll = 1;
+            //            while (explodedRoll == 0 || explodedRoll == numSides + 1)
+            //            {
+            //                explodedRoll = Dice.Roll(numSides + 1);
+            //                if (explodedRoll == numSides + 1)
+            //                {
+            //                    explodedResultText += numSides + "+";
+            //                    roll += numSides;
+            //                }
+            //                else
+            //                {
+            //                    explodedResultText += explodedRoll + ")";
+            //                    roll += explodedRoll;
+            //                }
+            //            }
+            //        }
+            //        else if (roll == numSides + 1 && (diceType == "s" || diceType == "sd"))
+            //        {
+            //            //Smooth explode down
+            //            roll = 1;
 
-                        explodedResultText += "(DN: " + roll + "-";
-                        int explodedRoll = 0;
+            //            explodedResultText += "(DN: " + roll + "-";
+            //            int explodedRoll = 0;
 
-                        while (explodedRoll == 0 || explodedRoll == numSides + 1)
-                        {
-                            explodedRoll = Dice.Roll(numSides + 1);
-                            if (explodedRoll == numSides + 1)
-                            {
-                                explodedResultText += numSides + "-";
-                                roll -= numSides;
-                            }
-                            else
-                            {
-                                explodedResultText += explodedRoll + ")";
-                                roll -= explodedRoll;
-                            }
-                        }
-                    }
+            //            while (explodedRoll == 0 || explodedRoll == numSides + 1)
+            //            {
+            //                explodedRoll = Dice.Roll(numSides + 1);
+            //                if (explodedRoll == numSides + 1)
+            //                {
+            //                    explodedResultText += numSides + "-";
+            //                    roll -= numSides;
+            //                }
+            //                else
+            //                {
+            //                    explodedResultText += explodedRoll + ")";
+            //                    roll -= explodedRoll;
+            //                }
+            //            }
+            //        }
 
-                    explodedResultText = roll + " " + explodedResultText;
+            //        explodedResultText = roll + " " + explodedResultText;
 
-                    result.Result += roll;
+            //        result.Result += roll;
 
-                    if (!string.IsNullOrWhiteSpace(explodedResultText))
-                    {
-                        result.FullResults += explodedResultText;
-                    }
-                    if ((i < numDice))
-                    {
-                        result.FullResults += " + ";
-                    }
-                    //else
-                    //{
-                    //    result.FullResults += " = ";
-                    //}
-                }
+            //        if (!string.IsNullOrWhiteSpace(explodedResultText))
+            //        {
+            //            result.Accounting += explodedResultText;
+            //        }
+            //        if ((i < numDice))
+            //        {
+            //            result.Accounting += " + ";
+            //        }
+            //        //else
+            //        //{
+            //        //    result.FullResults += " = ";
+            //        //}
+            //    }
 
-            }
+            //}
 
-            //Threshold dice
-            if (threshold.HasValue)
-            {
-                int successes = 0;
-                string tresultText = "";
+            ////Threshold dice
+            //if (threshold.HasValue)
+            //{
+            //    int successes = 0;
+            //    string tresultText = "";
 
-                //roll just one die of the type 
-                string newDiceExpression = match.Groups["dsides"].Value;
-                for (int i = 1; (i <= numDice); i++)
-                {
+            //    //roll just one die of the type 
+            //    string newDiceExpression = match.Groups["dsides"].Value;
+            //    for (int i = 1; (i <= numDice); i++)
+            //    {
 
-                    int tresult = Dice.Roll(newDiceExpression);
-                    tresultText += tresult;
-                    if (tresult >= threshold.Value)
-                    {
-                        successes += 1;
-                        tresultText += "*";
-                        if (thresholdType == "b" && tresult >= numSides)
-                        {
-                            //max rolls "burst" to new chances
+            //        int tresult = Dice.Roll(newDiceExpression);
+            //        tresultText += tresult;
+            //        if (tresult >= threshold.Value)
+            //        {
+            //            successes += 1;
+            //            tresultText += "*";
+            //            if (thresholdType == "b" && tresult >= numSides)
+            //            {
+            //                //max rolls "burst" to new chances
 
-                            int burstRoll = 0;
-                            tresultText += "(BURST: ";
+            //                int burstRoll = 0;
+            //                tresultText += "(BURST: ";
 
-                            while (burstRoll == 0 || burstRoll >= numSides)
-                            {
-                                burstRoll = Dice.Roll(newDiceExpression);
-                                tresultText += burstRoll;
-                                if (burstRoll >= threshold)
-                                {
-                                    successes += 1;
-                                    tresultText += "*";
-                                }
-                                if (burstRoll == numSides)
-                                {
-                                    tresultText += ", ";
-                                }
-                            }
-                            tresultText += ")";
+            //                while (burstRoll == 0 || burstRoll >= numSides)
+            //                {
+            //                    burstRoll = Dice.Roll(newDiceExpression);
+            //                    tresultText += burstRoll;
+            //                    if (burstRoll >= threshold)
+            //                    {
+            //                        successes += 1;
+            //                        tresultText += "*";
+            //                    }
+            //                    if (burstRoll == numSides)
+            //                    {
+            //                        tresultText += ", ";
+            //                    }
+            //                }
+            //                tresultText += ")";
 
-                        }
-                    }
-                    if (i != numDice)
-                    {
-                        tresultText += ", ";
-                    }
-                }
+            //            }
+            //        }
+            //        if (i != numDice)
+            //        {
+            //            tresultText += ", ";
+            //        }
+            //    }
 
-                result.Result = successes;
+            //    result.Result = successes;
 
-                if (!string.IsNullOrWhiteSpace(tresultText))
-                {
-                    result.FullResults += tresultText;
-                }
-                //result.FullResults += " = ";
+            //    if (!string.IsNullOrWhiteSpace(tresultText))
+            //    {
+            //        result.Accounting += tresultText;
+            //    }
+            //    //result.FullResults += " = ";
 
-            }
+            //}
 
 
-            result.Result += modifier;
+            //result.Result += modifier;
 
 
 
-            if ((modifier < 0))
-            {
-                result.FullResults += " (" + modifier + ")";
-            }
-            if ((modifier > 0))
-            {
-                result.FullResults += " (+" + modifier + ")";
-            }
+            //if ((modifier < 0))
+            //{
+            //    result.Accounting += " (" + modifier + ")";
+            //}
+            //if ((modifier > 0))
+            //{
+            //    result.Accounting += " (+" + modifier + ")";
+            //}
 
-            // Limits occur after Modifiers are applied        
-            if ((lowerlimit.HasValue && (result.Result < lowerlimit)))
-            {
-                result.FullResults = result.Result + " (FLOOR " + lowerlimit.Value + ") = " + result.FullResults;
-                result.Result = lowerlimit.Value;
+            //// Limits occur after Modifiers are applied        
+            //if ((lowerlimit.HasValue && (result.Result < lowerlimit)))
+            //{
+            //    result.Accounting = result.Result + " (FLOOR " + lowerlimit.Value + ") = " + result.Accounting;
+            //    result.Result = lowerlimit.Value;
 
-            }
-            // Limits occur after Modifiers are applied        
-            if ((upperlimit.HasValue && (result.Result > upperlimit)))
-            {
-                result.FullResults = result.Result + " (CEILING " + upperlimit.Value + ") = " + result.FullResults;
-                result.Result = upperlimit.Value;
+            //}
+            //// Limits occur after Modifiers are applied        
+            //if ((upperlimit.HasValue && (result.Result > upperlimit)))
+            //{
+            //    result.Accounting = result.Result + " (CEILING " + upperlimit.Value + ") = " + result.Accounting;
+            //    result.Result = upperlimit.Value;
 
-            }
+            //}
 
-            result.FullResults = result.Result + " = " + result.FullResults;
+            //result.Accounting = result.Result + " = " + result.Accounting;
             return result;
         }
-
 
 
         public static bool ValidateDiceExpression(string DiceExpression)
@@ -387,7 +386,7 @@ namespace RegexDiceDotNet
             }
             else
             {
-                return diceregex.IsMatch(DiceExpression);
+                return DiceParameters.diceregex.IsMatch(DiceExpression);
             }
         }
 
@@ -438,23 +437,5 @@ namespace RegexDiceDotNet
     }
 
 
-    public class ExpandedDiceRoll
-    {
-        public string FullResults {get; set;}
-        public int Result {get; set;}
-        public List<Roll> Rolls {get; set;}
 
-        public DiceParameters DiceParameters { get; set; }
-
-        public Boolean IsValid { get; set; }
-    }
-
-    public class Roll
-    {
-        public int Result {get; set;}
-        public string Accounting {get; set;}
-        public Boolean IncludeInResult {get; set;}
-    }
-
-    
 }

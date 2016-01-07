@@ -13,6 +13,9 @@ namespace RegexDiceDotNetTestHarness
 {
     public partial class frmMain : Form
     {
+
+        private const string lineFormat = "{0}:\t{1}:\t{2,5}\tFull Result: {3}";
+
         public frmMain()
         {
             InitializeComponent();
@@ -61,12 +64,12 @@ namespace RegexDiceDotNetTestHarness
             else
             {
                 //Roll dice normally
-                string lineFormat = "{0}:\t{1}:\t{2,5}\tFull Result: {3}";
+                
 
                 for (int i = 0; i < nRolls; i++)
                 {
                     ExpandedDiceRoll result = Dice.RollExpanded(diceExpression);
-                    sb.AppendLine(string.Format(lineFormat, i + 1, diceExpression, result.Result, result.FullResults));
+                    sb.AppendLine(string.Format(lineFormat, i + 1, diceExpression, result.FullResult, result.Accounting));
                 }
 
                 txtResults.Text = sb.ToString();
@@ -83,6 +86,24 @@ namespace RegexDiceDotNetTestHarness
         {
             this.numRolls.Value = 1000000;
         }
+
+        private void btnRollOneOfEach_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            this.txtResults.Clear();
+            int i = 0;
+            foreach (object obj in this.cmbDiceExpression.Items)
+            {
+                i++;
+                string expr = (string)obj;
+                ExpandedDiceRoll result = Dice.RollExpanded(expr);
+                sb.AppendLine(string.Format(lineFormat, i , expr, result.FullResult, result.Accounting));
+
+            }
+            txtResults.Text = sb.ToString();
+        }
+
+
 
     }
 }

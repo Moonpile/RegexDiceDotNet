@@ -35,6 +35,7 @@
             this.btnRoll = new System.Windows.Forms.Button();
             this.numRolls = new System.Windows.Forms.NumericUpDown();
             this.lblDiceExpression = new System.Windows.Forms.Label();
+            this.btnRollOneOfEach = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numRolls)).BeginInit();
             this.SuspendLayout();
             // 
@@ -152,11 +153,22 @@
             this.lblDiceExpression.TabIndex = 13;
             this.lblDiceExpression.Text = "Dice Expression:";
             // 
+            // btnRollOneOfEach
+            // 
+            this.btnRollOneOfEach.Location = new System.Drawing.Point(476, 5);
+            this.btnRollOneOfEach.Name = "btnRollOneOfEach";
+            this.btnRollOneOfEach.Size = new System.Drawing.Size(75, 23);
+            this.btnRollOneOfEach.TabIndex = 14;
+            this.btnRollOneOfEach.Text = "One of Each";
+            this.btnRollOneOfEach.UseVisualStyleBackColor = true;
+            this.btnRollOneOfEach.Click += new System.EventHandler(this.btnRollOneOfEach_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1036, 509);
+            this.Controls.Add(this.btnRollOneOfEach);
             this.Controls.Add(this.lblDiceExpression);
             this.Controls.Add(this.numRolls);
             this.Controls.Add(this.btnMillionRolls);
@@ -182,6 +194,7 @@
         private System.Windows.Forms.Button btnRoll;
         private System.Windows.Forms.NumericUpDown numRolls;
         private System.Windows.Forms.Label lblDiceExpression;
+        private System.Windows.Forms.Button btnRollOneOfEach;
     }
 }
 
